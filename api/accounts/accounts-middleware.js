@@ -9,6 +9,7 @@ exports.checkAccountPayload = (req, res, next) => {
   } else if (req.body.name.trim().length < 3 || req.body.name.trim().length > 100) {
     res.status(400).json({ message: 'name of account must be between 3 and 100' })
   } else if (typeof req.body.budget !== 'number') {
+    console.log(req.body.budget)
     res.status(400).json({ message: 'budget of account must be a number' })
   } else if (req.body.budget < 0 || req.body.budget > 1000000) {
     res.status(400).json({ message:'budget of account is too large or too small'})
@@ -21,16 +22,26 @@ exports.checkAccountPayload = (req, res, next) => {
 exports.checkAccountNameUnique = async (req, res, next) => {
   // DO YOUR MAGIC
   try {
-    const account = await Accounts.getById(req.params.id)
-    if((!account.name.trim).uniqueString()) {
-      res.status(400).json({ message:'that name is taken'})
+    const account = await Accounts.getAll()
+    const name = req.body.name.trim()
+    const results = account.filter(item => {
+      if(item.name === name) {
+        return item
+      } 
+    }) 
+      if (results.length > 0) {
+        return res.status(400).json({ message: 'that name is taken'})
     } else {
-      req.account = account.name.trim()
+      next()
     }
   } catch (err) {
     next(err)
   }
 }
+    // if(!account.name.trim()) {
+      // res.status(400).json({ message:'that name is taken'})
+    // } else {
+      // req.account = account.name.trim()
 
 exports.checkAccountId = async (req, res, next) => {
   // DO YOUR MAGIC

@@ -24,6 +24,7 @@ router.post('/', checkAccountPayload, checkAccountNameUnique, (req, res, next) =
   // DO YOUR MAGIC
   Account.create(req.body)
   .then(acc => {
+    console.log('post request', acc)
     res.status(201).json(acc)
     acc.trim();
   })
